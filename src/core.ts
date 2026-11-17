@@ -381,6 +381,17 @@ export function areaZoneNames(product: any): string[] {
   return [...new Set(zs.map((z) => String(z?.name ?? '').trim()).filter(Boolean))];
 }
 
+/** Give merged areas (Colorado "CAIC zone") the names of the zones they cover, read from their products (at most 8 reads). */
+export async function nameMergedAreas(f: FetchText, zones: Zone[]): Promise<void> {
+  const merged = zones.filter((z) => /forecast area \d+$/.test(z.name)).slice(0, 8);
+  await Promise.all(merged.map(async (z) => {
+    try {
+      const names = areaZoneNames(await fetchProduct(f, z.center_id, z.id));
+      if (names.length) z.name = `${z.center_id} area: ${names.join(', ')}`;
+    } catch { /* keep the generic name */ }
+  }));
+}
+
 // ---------- tools ----------
 
 const dangerText = (z: Zone) => (z.danger_level ? `${z.danger} (${z.danger_level} of 5)` : 'no danger rating');
@@ -467,6 +478,7 @@ export async function avalancheDangerMap(f: FetchText, a: { state?: string; cent
   const order = ['Extreme', 'High', 'Considerable', 'Moderate', 'Low', 'No rating', 'Off season'];
   const countText = order.filter((k) => counts[k]).map((k) => `${counts[k]} ${k}`).join(', ');
   const scope = a.center ? `${zones[0].center} (${zones[0].center_id})` : a.state ? STATES[stateCode(a.state) as string] : 'the US';
+  await nameMergedAreas(f, shown);
   const rated = shown.filter((z) => z.danger_level);
   const lines = [`Avalanche danger right now in ${scope}: ${zones.length} forecast zones, ${countText}.`];
   for (const z of rated.slice(0, 25)) lines.push(`${z.danger} (${z.danger_level}): ${z.name}, ${z.center_id}, ${z.state}${z.valid_to ? `, until ${localTime(new Date(z.valid_to), z.timezone)}` : ''}`);
@@ -494,6 +506,7 @@ export async function avalancheCenters(f: FetchText, a: { state?: string }, now:
     zones = zones.filter((z) => z.state === st);
     if (!zones.length) throw new InputError(`no avalanche center forecasts zones in ${STATES[st]}.`);
   }
+  await nameMergedAreas(f, zones);
   const by = new Map<string, Zone[]>();
   for (const z of zones) by.set(z.center_id, [...(by.get(z.center_id) ?? []), z]);
   const centers = [...by.entries()].map(([id, zs]) => {
@@ -509,6 +522,6 @@ export async function avalancheCenters(f: FetchText, a: { state?: string }, now:
   const issuing = centers.filter((c) => c.status === 'issuing danger ratings').length;
   const off = centers.filter((c) => c.status === 'off season').length;
   const lines = [`${centers.length} avalanche centers${a.state ? ` in ${STATES[stateCode(a.state) as string]}` : ''} with ${zones.length} forecast zones: ${issuing} issuing danger ratings now, ${off} off season, ${centers.length - issuing - off} in season without a rating today.`];
-  for (const c of centers) lines.push(`${c.center_id} ${c.name} (${c.states.join('/')}): ${c.zones.length} zones, ${c.status}${c.highest_danger ? `, highest ${c.highest_danger}` : ''}`);
+  for (const c of centers) lines.push(`${c.center_id} ${c.name} (${c.states.join('/')}): ${c.zones.length} zone${c.zones.length === 1 ? '' : 's'}, ${c.status}${c.highest_danger ? `, highest ${c.highest_danger}` : ''}`);
   return { summary: lines.join('\n'), centers, as_of: now.toISOString(), source: SOURCE, more: more() };
 }

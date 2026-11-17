@@ -133,6 +133,8 @@ test('avalanche_danger_map and avalanche_centers: counts, state and center filte
   const all = await avalancheDangerMap(f, {}, NOW);
   assert.deepEqual(all.counts, { 'No rating': 80, 'Off season': 2, Moderate: 1, Low: 4 });
   assert.equal(all.zones.length, 87); assert.equal(all.zones[0].name, 'Moab');
+  assert.match(all.summary, /Low \(1\): CAIC area: Rico Mountains, Northern San Juan Mountains, La Plata Mountains, Southern San Juan Mountains, CAIC, CO/);
+  assert.ok(all.zones.some((z) => z.name === 'CAIC forecast area 2745')); // no product fixture: the generic name stays
   assert.equal((await avalancheDangerMap(f, { rated_only: true }, NOW)).zones.length, 5);
   assert.equal((await avalancheDangerMap(f, { min_level: 2 }, NOW)).zones.length, 1);
   const ut = await avalancheDangerMap(f, { state: 'Utah' }, NOW);
@@ -146,6 +148,7 @@ test('avalanche_danger_map and avalanche_centers: counts, state and center filte
   assert.equal(utc.centers.length, 1); assert.equal(utc.centers[0].center_id, 'UAC'); assert.equal(utc.centers[0].zones.length, 9);
   assert.equal(utc.centers[0].status, 'issuing danger ratings'); assert.equal(utc.centers[0].highest_danger, 'Moderate (2)');
   assert.equal(c.centers.find((x) => x.center_id === 'MWAC').status, 'off season');
+  assert.match(c.summary, /CAC Cordova Avalanche Center \(AK\): 1 zone, in season/);
 });
 
 test('stdio: initialize, tools/list with annotations and a tools/call error over JSON-RPC (offline)', async () => {
