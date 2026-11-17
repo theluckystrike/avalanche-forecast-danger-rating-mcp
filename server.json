@@ -1,0 +1,17 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/avalanche-forecast-danger-rating-mcp",
+  "title": "Avalanche Forecast and Danger Rating MCP",
+  "description": "Avalanche forecast: danger rating by zone and elevation, problems and bottom line (avalanche.org)",
+  "version": "1.0.0",
+  "repository": {
+    "url": "https://github.com/theluckystrike/avalanche-forecast-danger-rating-mcp",
+    "source": "github"
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://avalanche-forecast-danger-rating-mcp.lipmichal.workers.dev/mcp"
+    }
+  ]
+}

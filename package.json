@@ -1,0 +1,56 @@
+{
+  "name": "avalanche-forecast-danger-rating-mcp",
+  "version": "1.0.0",
+  "description": "Avalanche forecast MCP server: today's avalanche danger rating by zone and elevation, avalanche problems and bottom line from US avalanche centers (avalanche.org), for any place or mountain zone. Hosted, no key.",
+  "type": "module",
+  "license": "MIT",
+  "author": "theluckystrike",
+  "mcpName": "io.github.theluckystrike/avalanche-forecast-danger-rating-mcp",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/avalanche-forecast-danger-rating-mcp"
+  },
+  "homepage": "https://www.mcpstamp.com/servers/",
+  "bin": {
+    "avalanche-forecast-danger-rating-mcp": "dist/stdio.js"
+  },
+  "main": "dist/stdio.js",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run build && node --test",
+    "start": "node dist/stdio.js",
+    "deploy": "npx wrangler@4 deploy",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.20.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0"
+  },
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "avalanche-forecast",
+    "avalanche-danger",
+    "avalanche-danger-rating",
+    "avalanche",
+    "backcountry-skiing",
+    "snow-safety",
+    "avalanche-center",
+    "splitboarding",
+    "snowmobiling",
+    "cloudflare-workers"
+  ]
+}

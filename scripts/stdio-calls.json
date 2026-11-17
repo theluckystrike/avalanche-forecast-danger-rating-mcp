@@ -1,0 +1,5 @@
+[
+  ["avalanche_forecast", {"place": "Silverton, CO"}],
+  ["avalanche_danger_map", {"rated_only": true}],
+  ["avalanche_centers", {"state": "WA"}]
+]
